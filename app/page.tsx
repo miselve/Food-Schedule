@@ -22,6 +22,23 @@ export default function FoodSchedule() {
   const [isDarkTheme, setIsDarkTheme] = useState(false);
 
   useEffect(() => {
+    // Check system preference for dark mode
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDarkTheme(mediaQuery.matches); 
+
+    // Listen for changes to the system theme
+    const handleThemeChange = (e: { matches: boolean | ((prevState: boolean) => boolean); }) => {
+      setIsDarkTheme(e.matches);
+    };
+
+    mediaQuery.addEventListener('change', handleThemeChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleThemeChange);
+    };
+  }, []);
+
+  useEffect(() => {
     updateSchedule(date);
     document.body.classList.toggle('dark', isDarkTheme);
   }, [date, isDarkTheme]);
