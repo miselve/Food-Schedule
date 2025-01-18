@@ -16,7 +16,6 @@ import { Switch } from '@/components/ui/switch';
 import { monthlySchedule } from '@/lib/schedule';
 import elLocale from 'date-fns/locale/el';
 
-
 export default function FoodSchedule() {
   const [date, setDate] = useState<Date>(new Date());
   const [schedule, setSchedule] = useState<any>(null);
@@ -27,13 +26,26 @@ export default function FoodSchedule() {
     document.body.classList.toggle('dark', isDarkTheme);
   }, [date, isDarkTheme]);
 
+  const dayMapping = {
+    κυριακή: "sunday",
+    δευτέρα: "monday",
+    τρίτη: "tuesday",
+    τετάρτη: "wednesday",
+    πέμπτη: "thursday",
+    παρασκευή: "friday",
+    σάββατο: "saturday",
+  };
+
   const updateSchedule = (selectedDate: Date) => {
-    const dayOfWeek = format(selectedDate, 'EEEE').toLowerCase(); // e.g., 'monday'
+    const dayOfWeekGreek = format(selectedDate, "EEEE", { locale: elLocale }).toLowerCase(); // Greek day name
+    const dayOfWeek = dayMapping[dayOfWeekGreek as keyof typeof dayMapping]; // Map to English
+
     const weekNumber = Math.min(Math.floor((selectedDate.getDate() - 1) / 7) + 1, 4); // Cap weekNumber to 4
     const weekKey = `week${weekNumber}` as keyof typeof monthlySchedule;
 
     // Check if the week and day exist in the schedule
     if (
+      dayOfWeek &&
       monthlySchedule[weekKey] &&
       monthlySchedule[weekKey][dayOfWeek as keyof typeof monthlySchedule[typeof weekKey]]
     ) {
@@ -88,7 +100,7 @@ export default function FoodSchedule() {
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? format(date, "PPP") : <span>Pick a date</span>}
+              {date ? format(date, "PPP", { locale: elLocale }) : <span>Pick a date</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="center">
@@ -103,6 +115,7 @@ export default function FoodSchedule() {
               fromDate={new Date(2025, 0, 1)} // January 1, 2025
               toDate={new Date(2025, 11, 31)} // December 31, 2025
               initialFocus
+              locale={elLocale}
             />
           </PopoverContent>
         </Popover>
@@ -117,20 +130,20 @@ export default function FoodSchedule() {
           </CardHeader>
           <CardContent className="space-y-6">
             <MealSection title="Μεσημεριανό" options={schedule.lunch} isPassed={isLunchPassed} />
-            <MealSection title="Βραδυνό" options={schedule.dinner} isPassed={isDinnerPassed} />
+            <MealSection title="Βραδινό" options={schedule.dinner} isPassed={isDinnerPassed} />
           </CardContent>
         </Card>
       ) : (
         <Card className="w-full max-w-md mb-8">
           <CardHeader>
-            <CardTitle>{format(date, 'EEEE, MMMM d, yyyy')}</CardTitle>
+            <CardTitle>{format(date, 'EEEE, MMMM d, yyyy', { locale: elLocale })}</CardTitle>
           </CardHeader>
           <CardContent>
             <p>No schedule available for this date.</p>
           </CardContent>
         </Card>
       )}
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md mb-4">
         <CardHeader>
           <CardTitle>Ωράρια Λέσχης</CardTitle>
         </CardHeader>
@@ -142,6 +155,9 @@ export default function FoodSchedule() {
           </div>
         </CardContent>
       </Card>
+      <footer className="mt-4 text-center text-sm text-muted-foreground">
+        © {new Date().getFullYear()} - Made with ❤ by <a href="https://opensourceduth.gr" target="_blank" style={{ fontWeight: 'bold', textDecoration: 'underline' }}> OpenSource DUTH</a>
+      </footer>
     </div>
   );
 }
