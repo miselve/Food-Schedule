@@ -14,7 +14,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { monthlySchedule } from '@/lib/schedule';
-import elLocale from 'date-fns/locale/el';
+import { el as elLocale } from 'date-fns/locale';
+import { Info } from 'lucide-react';
 
 export default function FoodSchedule() {
   const [date, setDate] = useState<Date>(new Date());
@@ -103,7 +104,7 @@ export default function FoodSchedule() {
           <Moon className="h-4 w-4" />
         </div>
       </div>
-      <div className="flex items-center space-x-4 mb-8">
+      <div className="flex items-center space-x-4 mb-5 ">
         <Button variant="outline" size="icon" onClick={handlePrevDay}>
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -112,7 +113,7 @@ export default function FoodSchedule() {
             <Button
               variant={"outline"}
               className={cn(
-                "w-[240px] justify-start text-left font-normal",
+                "w-auto justify-start text-left font-normal",
                 !date && "text-muted-foreground"
               )}
             >
@@ -139,6 +140,20 @@ export default function FoodSchedule() {
         <Button variant="outline" size="icon" onClick={handleNextDay}>
           <ChevronRight className="h-4 w-4" />
         </Button>
+        <div className="relative">
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-blue-500 hover:text-blue-700">
+                <Info className="h-5 w-5" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-4">
+              <p className="text-sm">
+                Το πρόγραμμα ενδέχεται να μην είναι πάντα ακριβές. Τα στοιχεία βασίζονται στο ημερίσιο μενού της λέσχης και όχι στην ζωντανή διαθεσιμότητα.
+              </p>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
       {schedule ? (
         <Card className="w-full max-w-md mb-8">
