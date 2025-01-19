@@ -16,6 +16,7 @@ import { Switch } from '@/components/ui/switch';
 import { monthlySchedule } from '@/lib/schedule';
 import { el as elLocale } from 'date-fns/locale';
 import { Info } from 'lucide-react';
+import { RestaurantStatus } from '@/components/RestaurantStatus';
 
 export default function FoodSchedule() {
   const [date, setDate] = useState<Date>(new Date());
@@ -104,6 +105,10 @@ export default function FoodSchedule() {
           <Moon className="h-4 w-4" />
         </div>
       </div>
+      {/* Added the RestaurantStatus component */}
+      <div className="flex items-center justify-between w-full max-w-md mb-8">
+          <RestaurantStatus />
+        </div>
       <div className="flex items-center space-x-4 mb-5 ">
         <Button variant="outline" size="icon" onClick={handlePrevDay}>
           <ChevronLeft className="h-4 w-4" />
