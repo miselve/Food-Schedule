@@ -124,7 +124,7 @@ export const monthlySchedule = {
         },
         "thursday": {
             "lunch": {
-                "option1": "Χοιρινολεμονατο",
+                "option1": "Χοιρινό Λεμονάτο",
                 "option2": "Ριζότο Θαλασσινών",
                 "option3": "Όσπρια"
             },
@@ -141,7 +141,7 @@ export const monthlySchedule = {
                 "option3": "Αρακάς"
             },
             "dinner": {
-                "option1": "Πίτσα Ζαμπόν,Μανιτάρια,Τυρί",
+                "option1": "Πίτσα Ζαμπόν, Μανιτάρια, Τυρί",
                 "option2": "Μακαρόνια Σάλτσα Τομάτας",
                 "option3": "Κοτόπουλο Πανέ"
             }
