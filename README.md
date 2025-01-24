@@ -4,5 +4,8 @@ A simple website to display the food schedule for the university with no data sc
 Installation: \
 `npm install next tailwindcss`
 
+Run: \
+`npm run dev`
+
 Local Host Port: \
 `3000`

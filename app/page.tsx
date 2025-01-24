@@ -59,7 +59,10 @@ export default function FoodSchedule() {
     const dayOfWeekGreek = format(selectedDate, "EEEE", { locale: elLocale }).toLowerCase(); // Greek day name
     const dayOfWeek = dayMapping[dayOfWeekGreek as keyof typeof dayMapping]; // Map to English
 
-    const weekNumber = Math.min(Math.floor((selectedDate.getDate() - 1) / 7) + 1, 4); // Cap weekNumber to 4
+    const referenceDate = new Date(2024, 11, 30); // December 30, 2024 (Monday of the first full week)
+    const daysSinceReference = Math.floor((selectedDate.getTime() - referenceDate.getTime()) / (1000 * 60 * 60 * 24));
+    const weekNumber = ((Math.floor(daysSinceReference / 7) % 4) + 4) % 4 + 1; // Cycle through weeks 1 to 4
+
     const weekKey = `week${weekNumber}` as keyof typeof monthlySchedule;
 
     // Check if the week and day exist in the schedule
@@ -163,7 +166,7 @@ export default function FoodSchedule() {
       {schedule ? (
         <Card className="w-full max-w-md mb-8">
           <CardHeader>
-            <CardTitle>{format(date, 'EEEE, d MMMM, yyyy', { locale: elLocale })}</CardTitle>
+            <CardTitle>{format(date, 'EEEE d MMMM, yyyy', { locale: elLocale })}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <MealSection title="Μεσημεριανό" options={schedule.lunch} isPassed={isLunchPassed} />
@@ -206,7 +209,7 @@ function MealSection({ title, options, isPassed, }: {
 }) {
   return (
     <div className={cn("space-y-2", isPassed && "opacity-50")}>
-      <h3 className="font-medium">{title}</h3>
+      <h3 className="font-medium"><strong>{title}</strong></h3>
       <ul className="space-y-1">
         {Object.entries(options).map(([key, value], index) => (
           <li key={key} className="text-sm">
