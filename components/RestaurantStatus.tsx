@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { format, differenceInMinutes, addDays } from 'date-fns';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { srLatn } from 'date-fns/locale';
 
 type TimeRange = {
   start: string;
@@ -24,22 +25,30 @@ function getStatus(currentTime: Date): { isOpen: boolean; message: string; color
   const dayStart = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate());
 
   for (const [meal, { start, end }] of Object.entries(schedule)) {
-    const startTime = new Date(dayStart.getTime() + parseTime(start));
-    const endTime = new Date(dayStart.getTime() + parseTime(end));
+    // Create time objects correctly accounting for DST
+    const [startHours, startMinutes] = start.split(':').map(Number);
+    const [endHours, endMinutes] = end.split(':').map(Number);
+    
+    const startTime = new Date(dayStart);
+    startTime.setHours(startHours, startMinutes, 0, 0);
+    
+    const endTime = new Date(dayStart);
+    endTime.setHours(endHours, endMinutes, 0, 0);
 
-    if (timeStr >= start && timeStr < end) {
+    // Use proper date comparison instead of string comparison
+    if (currentTime >= startTime && currentTime < endTime) {
       const remainingMinutes = differenceInMinutes(endTime, currentTime);
       const hours = Math.floor(remainingMinutes / 60);
       const minutes = remainingMinutes % 60;
       const timeString = hours > 0 ? `${hours} ώρ${hours > 1 ? 'ες' : 'α'} και ${minutes} λεπτά` : `${minutes} λεπτά`;
       return {
         isOpen: true,
-        message: `Το εστιατόριο θα είναι ανοιχτό για το ${meal === 'morning' ? 'πρωινό' : meal === 'lunch' ? 'μεσημεριανό' : 'βραδινό' } για ${timeString} ακόμα.`,
+        message: `Το εστιατόριο θα είναι ανοιχτό για το ${meal === 'morning' ? 'πρωινό' : meal === 'lunch' ? 'μεσημεριανό' : 'βραδινό'} για ${timeString} ακόμα.`,
         color: 'bg-green-100 border-green-500 text-green-700',
       };
     }
 
-    if (timeStr < start) {
+    if (currentTime < startTime) {
       const waitMinutes = differenceInMinutes(startTime, currentTime);
       const hours = Math.floor(waitMinutes / 60);
       const minutes = waitMinutes % 60;
@@ -52,21 +61,22 @@ function getStatus(currentTime: Date): { isOpen: boolean; message: string; color
     }
   }
 
-  // If we're past the last meal of the day
-  const nextDayMorning = addDays(dayStart, 1);
-  const waitMinutes = differenceInMinutes(nextDayMorning, currentTime) + parseTime(schedule.morning.start) / 60000;
+  // For the "past last meal" case
+  const nextDayMorning = new Date(dayStart);
+  nextDayMorning.setDate(nextDayMorning.getDate() + 1);
+  
+  const [morningHours, morningMinutes] = schedule.morning.start.split(':').map(Number);
+  nextDayMorning.setHours(morningHours, morningMinutes, 0, 0);
+  
+  const waitMinutes = differenceInMinutes(nextDayMorning, currentTime);
   const hours = Math.floor(waitMinutes / 60);
   const minutes = waitMinutes % 60;
+  
   return {
     isOpen: false,
     message: `Το εστιατόριο έχει κλείσει για σήμερα. Θα ανοίξει αύριο σε ${hours} ώρες και ${minutes} λεπτά για το πρωινό.`,
     color: 'bg-red-100 border-red-500 text-red-700',
   };
-}
-
-function parseTime(timeStr: string): number {
-  const [hours, minutes] = timeStr.split(':').map(Number);
-  return (hours * 60 + minutes) * 60000;
 }
 
 export function RestaurantStatus() {
