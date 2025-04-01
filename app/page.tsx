@@ -110,8 +110,11 @@ export default function FoodSchedule() {
       </div>
       {/* Added the RestaurantStatus component */}
       <div className="flex items-center justify-between w-full max-w-md mb-8">
+          <Announcement />
+      </div>
+      <div className="flex items-center justify-between w-full max-w-md mb-8">
           <RestaurantStatus />
-        </div>
+      </div>
       <div className="flex items-center space-x-4 mb-5 ">
         <Button variant="outline" size="icon" onClick={handlePrevDay}>
           <ChevronLeft className="h-4 w-4" />
